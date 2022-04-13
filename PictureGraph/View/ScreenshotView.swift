@@ -163,7 +163,7 @@ struct ScreenshotView: View {
                         
                     }
                 }
-                .frame(width: 800, height: 600)
+                .frame(width: 800, height: 800)
                 .padding()
             } else {
                 let gridLayoutH = [GridItem(.flexible(), spacing: 0),
@@ -200,7 +200,7 @@ struct ScreenshotView: View {
                             }}
                     }
                 }
-                .frame(width: 800, height: 600)
+                .frame(width: 800, height: 800)
                 .padding()
             }
             

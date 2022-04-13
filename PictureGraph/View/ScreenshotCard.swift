@@ -55,7 +55,7 @@ struct ScreenshotCard: View {
             HStack {
                 ArrowShape(direction: verticalArrow)
                     .stroke(lineWidth: 1)
-                    .frame(minWidth: 20, maxWidth: 20, minHeight: 75)
+                    .frame(minWidth: 20, maxWidth: 20, minHeight: 30)
                     .foregroundColor(.primary)
                     .padding(.leading, 50)
             }

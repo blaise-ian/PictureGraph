@@ -18,17 +18,22 @@ extension Array {
 }
 
 // Returns an array of screenshots (file name and creation date) sorted by creation date
-func getScreenshots() -> [Screenshot] {
+func getScreenshots(screenshotsDirectory: URL?) -> [Screenshot] {
     let screenshotDirectory = "screenshots"
     var screenshots: [Screenshot] = []
     let fileManager = FileManager.default
-    let documentsURL = fileManager.urls(for: .documentDirectory, in: .userDomainMask)
+    
+    var documentsURL = fileManager.urls(for: .documentDirectory, in: .userDomainMask)
         .first! // unwrap this safely
         .appendingPathComponent(screenshotDirectory)
     
+    if let test = screenshotsDirectory {
+        documentsURL = test
+    }
+    
     do {
         // get the pngs from the screenshot directory
-        let directoryContents = try fileManager.contentsOfDirectory(at: documentsURL, includingPropertiesForKeys: [.creationDateKey]).filter{$0.pathExtension == "png" }
+        let directoryContents = try fileManager.contentsOfDirectory(at: documentsURL, includingPropertiesForKeys: [.creationDateKey]).filter{$0.pathExtension == "png" || $0.pathExtension == "jpg" || $0.pathExtension == "jpeg" }
         for item in directoryContents {
             // try to get the creation date for each item
             let resValues = try item.resourceValues(forKeys: [.creationDateKey])
@@ -46,6 +51,7 @@ func getScreenshots() -> [Screenshot] {
         }
         // return the array sorted by date
         var sorted = screenshots.sorted { $0.date < $1.date }
+        if sorted.count > 0 {
         sorted[sorted.count - 1].isLast = true
         
         var numMissing = sorted.count % 4
@@ -54,6 +60,7 @@ func getScreenshots() -> [Screenshot] {
             for i in 0..<numMissing {
                 sorted.append(Screenshot(path: URL(string:"none")!, date: Date(), isLast: false, image: Image("transparent")))
             }
+        }
         }
         
         return sorted

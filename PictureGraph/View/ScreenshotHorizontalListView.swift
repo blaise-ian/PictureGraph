@@ -12,14 +12,20 @@ struct ScreenshotHorizontalListView: View {
     
     var body: some View {
         if let screen = screenshot {
-            VStack(alignment: .leading) {
-                screen.image
-                    .resizable()
-                    .frame(width: 100, height: 100)
-                Text("BLAH")
-                Text("Blah")
-                Text("BLAHHHH")
+            Button(action: {
+                NSWorkspace.shared.open(screen.path)
+            }) {
+                VStack(alignment: .leading) {
+                    screen.image
+                        .resizable()
+                        .frame(width: 100, height: 100)
+                    Text("File name: " + screen.path.lastPathComponent)
+                    Text("Date created: " + screen.dateString())
+                    Text("Time created: " + screen.timeString())
+                }
             }
+            .buttonStyle(PlainButtonStyle())
+            .padding(.bottom, 10)
         }
     }
 }

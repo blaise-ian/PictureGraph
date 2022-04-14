@@ -56,12 +56,12 @@ struct ScreenshotView: View {
     @State private var isHorizontalGrid: Bool = false
     @State private var isVerticalList: Bool = false
     @State private var isHorizontalList: Bool = false
-    
+    @State private var filename = "Filename"
     @State var lastScaleValue: CGFloat = 1.0
     let columns : Int = 5
     let rows : Int = 5
     
-    let screenshots = getScreenshots()
+    @State var screenshots = getScreenshots(screenshotsDirectory: nil)
     
     func isEvenRow(_ index: Int, _ arrSize: Int) -> Bool {
         let numRows = arrSize / 4 + 1
@@ -183,6 +183,22 @@ struct ScreenshotView: View {
                     Text("Horizontal")
                 }
                 .toggleStyle(.button)
+                
+                Spacer()
+                
+                Button("Choose Directory")
+                      {
+                        let panel = NSOpenPanel()
+                        panel.allowsMultipleSelection = false
+                        panel.canChooseDirectories = true
+                          panel.canChooseFiles = false
+                          
+                        if panel.runModal() == .OK {
+                            self.filename = panel.url?.lastPathComponent ?? "<none>"
+                            screenshots = getScreenshots(screenshotsDirectory: panel.url)
+                        }
+                      }
+                      .padding()
             }
             .padding(.leading)
             Divider()
@@ -244,10 +260,10 @@ struct ScreenshotView: View {
                 .frame(minWidth: 600, idealWidth: 600, maxWidth: .infinity, minHeight: 600, idealHeight: 600, maxHeight: .infinity)
                 .padding()
             } else if isHorizontalGrid {
-                let gridLayoutH = [GridItem(.flexible(), spacing: 0),
-                                  GridItem(.flexible(), spacing: 0),
-                                  GridItem(.flexible(), spacing: 0),
-                                  GridItem(.flexible(), spacing: 0)]
+                let gridLayoutH = [GridItem(.flexible(minimum: 50, maximum: .infinity), spacing: 0),
+                                   GridItem(.flexible(minimum: 50, maximum: .infinity), spacing: 0),
+                                   GridItem(.flexible(minimum: 50, maximum: .infinity), spacing: 0),
+                                   GridItem(.flexible(minimum: 50, maximum: .infinity), spacing: 0)]
                 
                 ScrollView(.horizontal) {
                     LazyHGrid(rows: gridLayoutH, spacing: 0) {
@@ -290,7 +306,8 @@ struct ScreenshotView: View {
                         }
                     }
                 }
-                .frame(maxWidth: .infinity)
+                .frame(maxWidth: .infinity, maxHeight: .infinity)
+                .ignoresSafeArea(.all)
             } else {
                 ScrollView(.horizontal) {
                     HStack {

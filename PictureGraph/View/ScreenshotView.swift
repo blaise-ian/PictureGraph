@@ -283,16 +283,25 @@ struct ScreenshotView: View {
                 .padding()
             } else if isVerticalList {
                 List {
-                    ForEach(screensFiltered, id: \.self) { screenshot in
+                    ForEach(screensFiltered.sorted { $0.date < $1.date }, id: \.self) { screenshot in
                         if screenshot.path.absoluteString != "none" {
-                            ScreenshotListView(screenshot: screenshot)
+                            ScreenshotVerticalListView(screenshot: screenshot)
                                 .padding(.bottom, 10)
                         }
                     }
                 }
                 .frame(maxWidth: .infinity)
             } else {
-                Text("Horizontal List View")
+                ScrollView(.horizontal) {
+                    HStack {
+                        ForEach(screensFiltered.sorted { $0.date < $1.date }, id: \.self) { screenshot in
+                            if screenshot.path.absoluteString != "none" {
+                                ScreenshotHorizontalListView(screenshot: screenshot)
+                                    .padding(.trailing, 10)
+                            }
+                        }
+                    }
+                }
             }
             
             

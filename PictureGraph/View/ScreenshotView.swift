@@ -70,7 +70,7 @@ struct ScreenshotView: View {
     }
     
     func isLastRow(index: Int, numColumns: Int, totalItems: Int) -> Bool {
-        var totalRows = totalItems / numColumns
+        let totalRows = totalItems / numColumns
         print("Index/numcolumsn", index/numColumns, "returns: ", index / numColumns == totalRows)
         
         return index / numColumns + 1 == totalRows
@@ -151,6 +151,7 @@ struct ScreenshotView: View {
                     TextField("File name...",
                               text: $fileName
                     )
+                    .padding()
             }
             .padding(.top)
             .padding(.leading)
@@ -278,13 +279,15 @@ struct ScreenshotView: View {
                     }
                 }
 
-                .frame(minWidth: 600, idealWidth: 600, maxWidth: .infinity, minHeight: 600, idealHeight: 600, maxHeight: .infinity)
+                .frame(minWidth: 600, idealWidth: 1000, maxWidth: .infinity, minHeight: 600, idealHeight: 600, maxHeight: .infinity)
                 .padding()
             } else if isVerticalList {
-                ScrollView(.vertical) {
+                List {
                     ForEach(screensFiltered, id: \.self) { screenshot in
-                        ScreenshotListView(screenshot: screenshot)
-                            .frame(maxWidth: .infinity)
+                        if screenshot.path.absoluteString != "none" {
+                            ScreenshotListView(screenshot: screenshot)
+                                .padding(.bottom, 10)
+                        }
                     }
                 }
                 .frame(maxWidth: .infinity)

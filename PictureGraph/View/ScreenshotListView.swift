@@ -10,17 +10,31 @@ import SwiftUI
 struct ScreenshotListView: View {
     var screenshot: Screenshot?
     var body: some View {
-        HStack {
-            screenshot?.image
-                .resizable()
-                .frame(minWidth: 50, idealWidth: 100, maxWidth: .infinity, minHeight: 50, idealHeight: 100, maxHeight: 200, alignment: .leading)
-            Text((screenshot?.path.lastPathComponent)!)
-            Button(action: {
-                    print("hey")
-            }) {
-                Text("hi")
+        Button(action: {
+            print("Trying to open: ", screenshot!.path)
+            print("INDEX: ", index)
+            NSWorkspace.shared.open(screenshot!.path)
+            // Image arrangement (arrows)
+            // HOrizontal/ Vertical view
+            //QLPreviewPanel to open with Quick Look
+            // Designing cards
+            
+            // Look into resizing to make additional columns/ rows depending on size
+        }) {
+            HStack {
+                screenshot?.image
+                    .resizable()
+                    .frame(width: 100, height: 100)
+                VStack (alignment: .leading){
+                    if let screen = screenshot {
+                        Text("File name: " + screen.path.lastPathComponent)
+                        Text("Date created: " + screen.dateString())
+                        Text("Time created: " + screen.timeString())
+                    }
+                }
             }
         }
+        .buttonStyle(PlainButtonStyle())
     }
 }
 

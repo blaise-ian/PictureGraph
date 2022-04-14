@@ -39,13 +39,24 @@ func getScreenshots() -> [Screenshot] {
                 {
                     
                 // insert new Screenshot to array
-                    let ss = Screenshot(path: item.absoluteURL, date: creationDate, image: Image(nsImage: nsImage))
+                    let ss = Screenshot(path: item.absoluteURL, date: creationDate, isLast: false, image: Image(nsImage: nsImage))
                 screenshots.append(ss)
                 }
             }
         }
         // return the array sorted by date
-        return screenshots.sorted { $0.date < $1.date }
+        var sorted = screenshots.sorted { $0.date < $1.date }
+        sorted[sorted.count - 1].isLast = true
+        
+        var numMissing = sorted.count % 4
+        
+        if numMissing != 0 {
+            for i in 0..<numMissing {
+                sorted.append(Screenshot(path: URL(string:"none")!, date: Date(), isLast: false, image: Image("transparent")))
+            }
+        }
+        
+        return sorted
     } catch {
         print(error)
     }

@@ -31,12 +31,17 @@ struct ScreenshotCard: View {
                         // Look into resizing to make additional columns/ rows depending on size
                     }) {
                         VStack {
+                            if screenshot?.path.absoluteString != "none" {
                         screenshot!.image
                             .resizable()
-                            .frame(width: 100, height: 100)
+                            .frame(minWidth: 50, idealWidth: 100, maxWidth: .infinity, minHeight: 50, idealHeight: 100, maxHeight: .infinity)
                             .shadow(radius: 5)
-                            Text("\(index)")
+                            Text(screenshot!.dateString())
+                            Text(screenshot!.timeString())
+//                            Text("\(index)")
+                            }
                         }
+                        
                             
                     }
                     .buttonStyle(PlainButtonStyle())
@@ -47,17 +52,22 @@ struct ScreenshotCard: View {
                         .resizable()
                         .frame(width: 100, height:100)
                 }
+                if screenshot?.path.absoluteString != "none" {
                 ArrowShape(direction: horizontalArrow)
                     .stroke(lineWidth: 1)
                     .frame(minWidth: 50, minHeight: 20, maxHeight: 20)
                     .foregroundColor(.primary)
+                    .padding(.bottom, 50)
+                }
             }
             HStack {
+                if(screenshot?.path.absoluteString != "none") {
                 ArrowShape(direction: verticalArrow)
                     .stroke(lineWidth: 1)
                     .frame(minWidth: 20, maxWidth: 20, minHeight: 30)
                     .foregroundColor(.primary)
                     .padding(.leading, 50)
+                }
             }
         }
     }

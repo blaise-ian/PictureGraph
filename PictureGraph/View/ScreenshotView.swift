@@ -52,7 +52,12 @@ struct ArrowShape: Shape {
 
 struct ScreenshotView: View {
     @State private var fileName: String = ""
-    @State private var isVertical: Bool = false
+    @State private var isVerticalGrid: Bool = true
+    @State private var isHorizontalGrid: Bool = false
+    @State private var isVerticalList: Bool = false
+    @State private var isHorizontalList: Bool = false
+    
+    @State var lastScaleValue: CGFloat = 1.0
     let columns : Int = 5
     let rows : Int = 5
     
@@ -98,25 +103,87 @@ struct ScreenshotView: View {
     }
     
     var body: some View {
-        VStack {
+        //Bindings for toggles
+        let verticalGridOn = Binding<Bool>(
+            get: { self.isVerticalGrid },
+            set: {
+                self.isVerticalGrid = $0;
+                self.isHorizontalGrid = false;
+                self.isVerticalList = false;
+                self.isHorizontalList = false
+            }
+        )
+        let horizontalGridOn = Binding<Bool>(
+            get: { self.isHorizontalGrid },
+            set: {
+                self.isHorizontalGrid = $0;
+                self.isVerticalGrid = false;
+                self.isVerticalList = false;
+                self.isHorizontalList = false
+            }
+        )
+        let verticalListOn = Binding<Bool>(
+            get: { self.isVerticalList },
+            set: {
+                self.isVerticalList = $0;
+                self.isHorizontalGrid = false;
+                self.isVerticalGrid = false;
+                self.isHorizontalList = false
+            }
+        )
+        let horizontalListOn = Binding<Bool>(
+            get: { self.isHorizontalList },
+            set: {
+                self.isHorizontalList = $0;
+                self.isHorizontalGrid = false;
+                self.isVerticalList = false;
+                self.isVerticalGrid = false
+                
+            }
+        )
+        
+        VStack (alignment: .leading){
             HStack {
-                Text("**Filters**")
+                    Text("**Filters**")
+                        .padding()
+                    Divider()
+                        .frame(height: 30)
+                    TextField("File name...",
+                              text: $fileName
+                    )
+            }
+            .padding(.top)
+            .padding(.leading)
+            
+            HStack {
+                Text("**Views**")
                     .padding()
                 Divider()
-                    .frame(height: 30)
-                TextField("File name...",
-                          text: $fileName
-                )
-                .padding()
-                Toggle(isOn: $isVertical) {
+                    .frame(height:30)
+                
+                Text("Grid: ")
+                Toggle(isOn: verticalGridOn) {
                     Text("Vertical")
                 }
                 .toggleStyle(.button)
-                .padding(.trailing)
                 
+                Toggle(isOn: horizontalGridOn) {
+                    Text("Horizontal")
+                }
+                .toggleStyle(.button)
+                
+                Text("List: ")
+                Toggle(isOn: verticalListOn) {
+                    Text("Vertical")
+                }
+                .toggleStyle(.button)
+                
+                Toggle(isOn: horizontalListOn) {
+                    Text("Horizontal")
+                }
+                .toggleStyle(.button)
             }
-            .padding()
-            
+            .padding(.leading)
             Divider()
             
             let screensFilteredPreSort = screenshots.filter {
@@ -126,24 +193,35 @@ struct ScreenshotView: View {
                     .starts(with: fileName.lowercased())
             }
             
-            let gridLayout = [GridItem(.flexible(), spacing: 0),
-                              GridItem(.flexible(), spacing: 0),
-                              GridItem(.flexible(), spacing: 0),
-                              GridItem(.flexible(), spacing: 0)]
+            let gridLayout = [GridItem(.flexible(minimum: 50, maximum: .infinity), spacing: 0),
+                              GridItem(.flexible(minimum: 50, maximum: .infinity), spacing: 0),
+                              GridItem(.flexible(minimum: 50, maximum: .infinity), spacing: 0),
+                              GridItem(.flexible(minimum: 50, maximum: .infinity), spacing: 0)]
             
             let screensFiltered = sortedScreens(screenshots: screensFilteredPreSort, numChunks: gridLayout.count)
             
-            if isVertical {
+            
+            // 2. Try to make this scrollview zoomable
+            //    -- Work on scaling the frame size up and down with the window size
+            // 3. Create a browse folder option to load images from selected folder
+            //    -- no files found should show if the directory is empty
+            // 1. add two more views
+            //    -- List Vertical/Horizontal
+            if isVerticalGrid {
                 ScrollView {
                     LazyVGrid(columns: gridLayout, spacing: 0) {
                         ForEach(screensFiltered.indices, id: \.self) { index in
                             if(index < screensFiltered.count){
-                                
-                                if index == screensFiltered.count - 1 { // isLastItem
+
+                                if screensFiltered[index].isLast { // isLastItem
                                     ScreenshotCard(horizontalArrow: "", verticalArrow: "", index: index, screenshot: screensFiltered[index])
                                 } else if isFirstItemInRow(index: index, numColumns: gridLayout.count) && isLastRow(index: index, numColumns: gridLayout.count, totalItems: screensFiltered.count) {
                                     if !isEvenRow(index, gridLayout.count) {
-                                        ScreenshotCard(horizontalArrow: "left", verticalArrow: "", index: index, screenshot: screensFiltered[index])
+                                        if index == screensFiltered.count - 4 {
+                                            ScreenshotCard(horizontalArrow: "left", verticalArrow: "", index: index, screenshot: screensFiltered[index])
+                                        } else {
+                                        ScreenshotCard(horizontalArrow: "left", verticalArrow: "down", index: index, screenshot: screensFiltered[index])
+                                        }
                                     } else {
                                         ScreenshotCard(horizontalArrow: "", verticalArrow: "", index: index, screenshot: screensFiltered[index])
                                     }
@@ -160,12 +238,11 @@ struct ScreenshotView: View {
                                 }
                             }
                         }
-                        
                     }
                 }
-                .frame(width: 800, height: 800)
+                .frame(minWidth: 600, idealWidth: 600, maxWidth: .infinity, minHeight: 600, idealHeight: 600, maxHeight: .infinity)
                 .padding()
-            } else {
+            } else if isHorizontalGrid {
                 let gridLayoutH = [GridItem(.flexible(), spacing: 0),
                                   GridItem(.flexible(), spacing: 0),
                                   GridItem(.flexible(), spacing: 0),
@@ -176,11 +253,11 @@ struct ScreenshotView: View {
                         ForEach(screensFiltered.indices, id: \.self) { index in
                             if(index < screensFiltered.count) {
                                 
-                                if index == screensFiltered.count - 1 { // isLastItem
+                                if screensFiltered[index].isLast { // isLastItem
                                 ScreenshotCard(horizontalArrow: "", verticalArrow: "", index: index, screenshot: screensFiltered[index])
                             } else if isFirstItemInRow(index: index, numColumns:  gridLayout.count) && isLastRow(index: index, numColumns: gridLayout.count, totalItems:screensFiltered.count) {
                                 if !isEvenRow(index, gridLayout.count) {
-                                    ScreenshotCard(horizontalArrow: "", verticalArrow: "up", index: index, screenshot: screensFiltered[index])
+                                    ScreenshotCard(horizontalArrow: "right", verticalArrow: "up", index: index, screenshot: screensFiltered[index])
                                     
                                 }
                                 else {
@@ -200,7 +277,8 @@ struct ScreenshotView: View {
                             }}
                     }
                 }
-                .frame(width: 800, height: 800)
+
+                .frame(minWidth: 600, idealWidth: 600, maxWidth: .infinity, minHeight: 600, idealHeight: 600, maxHeight: .infinity)
                 .padding()
             }
             

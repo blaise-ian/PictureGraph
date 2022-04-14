@@ -11,8 +11,10 @@ struct ScreenshotListView: View {
     var screenshot: Screenshot?
     var body: some View {
         HStack {
-            Image(systemName: "circle.fill")
-            Text("screenshot.path.absolutePath")
+            screenshot?.image
+                .resizable()
+                .frame(minWidth: 50, idealWidth: 100, maxWidth: .infinity, minHeight: 50, idealHeight: 100, maxHeight: 200, alignment: .leading)
+            Text((screenshot?.path.lastPathComponent)!)
             Button(action: {
                     print("hey")
             }) {

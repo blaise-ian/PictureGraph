@@ -280,6 +280,16 @@ struct ScreenshotView: View {
 
                 .frame(minWidth: 600, idealWidth: 600, maxWidth: .infinity, minHeight: 600, idealHeight: 600, maxHeight: .infinity)
                 .padding()
+            } else if isVerticalList {
+                ScrollView(.vertical) {
+                    ForEach(screensFiltered, id: \.self) { screenshot in
+                        ScreenshotListView(screenshot: screenshot)
+                            .frame(maxWidth: .infinity)
+                    }
+                }
+                .frame(maxWidth: .infinity)
+            } else {
+                Text("Horizontal List View")
             }
             
             

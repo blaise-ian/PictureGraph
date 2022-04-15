@@ -33,7 +33,7 @@ func getScreenshots(screenshotsDirectory: URL?) -> [Screenshot] {
     
     do {
         // get the pngs from the screenshot directory
-        let directoryContents = try fileManager.contentsOfDirectory(at: documentsURL, includingPropertiesForKeys: [.creationDateKey]).filter{$0.pathExtension == "png" || $0.pathExtension == "jpg" || $0.pathExtension == "jpeg" }
+        let directoryContents = try fileManager.contentsOfDirectory(at: documentsURL, includingPropertiesForKeys: [.creationDateKey]).filter{$0.pathExtension.lowercased() == "png" || $0.pathExtension.lowercased() == "jpg" || $0.pathExtension.lowercased() == "jpeg" }
         for item in directoryContents {
             // try to get the creation date for each item
             let resValues = try item.resourceValues(forKeys: [.creationDateKey])
@@ -54,8 +54,9 @@ func getScreenshots(screenshotsDirectory: URL?) -> [Screenshot] {
         if sorted.count > 0 {
         sorted[sorted.count - 1].isLast = true
         
-        var numMissing = sorted.count % 4
+        var numMissing = 4 - sorted.count % 4
         
+            // add some blanks at the end if needed
         if numMissing != 0 {
             for i in 0..<numMissing {
                 sorted.append(Screenshot(path: URL(string:"none")!, date: Date(), isLast: false, image: Image("transparent")))

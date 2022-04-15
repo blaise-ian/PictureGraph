@@ -32,17 +32,18 @@ struct ScreenshotCard: View {
                     }) {
                         VStack {
                             if screenshot?.path.absoluteString != "none" {
-                        screenshot!.image
-                            .resizable()
-                            .frame(minWidth: 50, idealWidth: 100, maxWidth: .infinity, minHeight: 50, idealHeight: 100, maxHeight: .infinity)
-                            .shadow(radius: 5)
-                            Text(screenshot!.dateString())
-                            Text(screenshot!.timeString())
-//                            Text("\(index)")
+                                screenshot!.image
+                                    .resizable()
+                                    .frame(minWidth: 50, idealWidth: 100, maxWidth: .infinity, minHeight: 50, idealHeight: 100, maxHeight: .infinity)
+                                    .shadow(radius: 5)
+                                Text(screenshot!.dateString())
+                                Text(screenshot!.timeString())
+                                Text(String(screenshot!.isLast))
+                                //                            Text("\(index)")
                             }
                         }
                         
-                            
+                        
                     }
                     .buttonStyle(PlainButtonStyle())
                     .help("\(screenshot!.path.lastPathComponent)")
@@ -53,20 +54,20 @@ struct ScreenshotCard: View {
                         .frame(width: 100, height:100)
                 }
                 if screenshot?.path.absoluteString != "none" {
-                ArrowShape(direction: horizontalArrow)
-                    .stroke(lineWidth: 1)
-                    .frame(minWidth: 50, minHeight: 20, maxHeight: 20)
-                    .foregroundColor(.primary)
-                    .padding(.bottom, 50)
+                    ArrowShape(direction: horizontalArrow)
+                        .stroke(lineWidth: 1)
+                        .frame(minWidth: 50, minHeight: 20, maxHeight: 20)
+                        .foregroundColor(.primary)
+                        .padding(.bottom, 50)
                 }
             }
             HStack {
                 if(screenshot?.path.absoluteString != "none") {
-                ArrowShape(direction: verticalArrow)
-                    .stroke(lineWidth: 1)
-                    .frame(minWidth: 20, maxWidth: 20, minHeight: 30)
-                    .foregroundColor(.primary)
-                    .padding(.leading, 50)
+                    ArrowShape(direction: verticalArrow)
+                        .stroke(lineWidth: 1)
+                        .frame(minWidth: 20, maxWidth: 20, minHeight: 30)
+                        .foregroundColor(.primary)
+                        .padding(.leading, 50)
                 }
             }
         }

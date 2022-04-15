@@ -7,49 +7,6 @@
 
 import SwiftUI
 
-struct ArrowShape: Shape {
-    var direction: String
-    
-    func path(in rect: CGRect) -> Path {
-        
-        let delta = rect.height / 3
-        let delta2 = rect.width / 3
-        return Path { path in
-            if direction == "right" {
-                path.move(to: CGPoint(x: 0, y: rect.midY))
-                path.addLine(to: CGPoint(x: rect.maxX, y: rect.midY))
-                
-                path.move(to: CGPoint(x: rect.maxX - delta, y: rect.midY - delta))
-                path.addLine(to: CGPoint(x: rect.maxX, y: rect.midY))
-                path.addLine(to: CGPoint(x: rect.maxX - delta, y: rect.midY + delta))
-            } else if direction == "left" {
-                path.move(to: CGPoint(x: 0, y: rect.midY))
-                path.addLine(to: CGPoint(x: rect.maxX, y: rect.midY))
-                
-                path.move(to: CGPoint(x: delta, y: rect.midY - delta))
-                path.addLine(to: CGPoint(x: 0, y: rect.midY))
-                path.addLine(to: CGPoint(x:  delta, y: rect.midY + delta))
-            } else if direction == "up" {
-                path.move(to: CGPoint(x: rect.midX, y: rect.maxY))
-                path.addLine(to: CGPoint(x: rect.midX, y: 0))
-                
-                path.move(to: CGPoint(x: rect.midX - delta2, y: delta2))
-                path.addLine(to: CGPoint(x: rect.midX, y: 0))
-                path.addLine(to: CGPoint(x: rect.midX + delta2, y: delta2))
-            } else if direction == "down" {
-                path.move(to: CGPoint(x: rect.midX, y: 0))
-                path.addLine(to: CGPoint(x: rect.midX, y: rect.maxY))
-                
-                path.move(to: CGPoint(x: rect.midX - delta2, y: rect.maxY - delta2))
-                path.addLine(to: CGPoint(x: rect.midX, y: rect.maxY))
-                path.addLine(to: CGPoint(x: rect.midX + delta2, y: rect.maxY - delta2))
-            } else {
-                //print("Invalid direction")
-            }
-        }
-    }
-}
-
 struct ScreenshotView: View {
     @State private var fileName: String = ""
     @State private var isVerticalGrid: Bool = true
@@ -58,49 +15,10 @@ struct ScreenshotView: View {
     @State private var isHorizontalList: Bool = false
     @State private var filename = "Filename"
     @State var lastScaleValue: CGFloat = 1.0
-    let columns : Int = 5
-    let rows : Int = 5
-    
     @State var screenshots = getScreenshots(screenshotsDirectory: nil)
     
-    func isEvenRow(_ index: Int, _ arrSize: Int) -> Bool {
-        let numRows = arrSize / 4 + 1
-        print("Index: " , index, "Num rows: ", numRows, " is even: ", index / 3 % 2)
-        return index / 4 % 2 == 0
-    }
-    
-    func isLastRow(index: Int, numColumns: Int, totalItems: Int) -> Bool {
-        let totalRows = totalItems / numColumns
-        print("Index/numcolumsn", index/numColumns, "returns: ", index / numColumns == totalRows)
-        
-        return index / numColumns + 1 == totalRows
-    }
-    
-    func isLastItemInRow(index: Int, numColumns: Int) -> Bool {
-        return (index+1) % numColumns == 0
-    }
-    
-    func isFirstItemInRow(index: Int, numColumns: Int) -> Bool {
-        return index % numColumns == 0
-    }
-    
-    func sortedScreens(screenshots: [Screenshot], numChunks: Int) -> [Screenshot] {
-        let result = screenshots.chunked(into: numChunks)
-        
-        var finalResult: [Screenshot] = []
-        
-        for(index, item) in result.enumerated()
-        {
-            if index % 2 == 0 {
-                let res = item.sorted {$0.date < $1.date}
-                finalResult += res
-            } else {
-                let res = item.sorted {$1.date < $0.date}
-                finalResult += res
-            }
-        }
-        return finalResult
-    }
+    let columns : Int = 5
+    let rows : Int = 5
     
     var body: some View {
         //Bindings for toggles
@@ -144,14 +62,14 @@ struct ScreenshotView: View {
         
         VStack (alignment: .leading){
             HStack {
-                    Text("**Filters**")
-                        .padding()
-                    Divider()
-                        .frame(height: 30)
-                    TextField("File name...",
-                              text: $fileName
-                    )
+                Text("**Filters**")
                     .padding()
+                Divider()
+                    .frame(height: 30)
+                TextField("File name...",
+                          text: $fileName
+                )
+                .padding()
             }
             .padding(.top)
             .padding(.leading)
@@ -187,20 +105,21 @@ struct ScreenshotView: View {
                 Spacer()
                 
                 Button("Choose Directory")
-                      {
-                        let panel = NSOpenPanel()
-                        panel.allowsMultipleSelection = false
-                        panel.canChooseDirectories = true
-                          panel.canChooseFiles = false
-                          
-                        if panel.runModal() == .OK {
-                            self.filename = panel.url?.lastPathComponent ?? "<none>"
-                            screenshots = getScreenshots(screenshotsDirectory: panel.url)
-                        }
-                      }
-                      .padding()
+                {
+                    let panel = NSOpenPanel()
+                    panel.allowsMultipleSelection = false
+                    panel.canChooseDirectories = true
+                    panel.canChooseFiles = false
+                    
+                    if panel.runModal() == .OK {
+                        self.filename = panel.url?.lastPathComponent ?? "<none>"
+                        screenshots = getScreenshots(screenshotsDirectory: panel.url)
+                    }
+                }
+                .padding()
             }
             .padding(.leading)
+            
             Divider()
             
             let screensFilteredPreSort = screenshots.filter {
@@ -217,7 +136,6 @@ struct ScreenshotView: View {
             
             let screensFiltered = sortedScreens(screenshots: screensFilteredPreSort, numChunks: gridLayout.count)
             
-            
             // 2. Try to make this scrollview zoomable
             //    -- Work on scaling the frame size up and down with the window size
             // 3. Create a browse folder option to load images from selected folder
@@ -229,18 +147,21 @@ struct ScreenshotView: View {
                     LazyVGrid(columns: gridLayout, spacing: 0) {
                         ForEach(screensFiltered.indices, id: \.self) { index in
                             if(index < screensFiltered.count){
-
                                 if screensFiltered[index].isLast { // isLastItem
+                                    if !isEvenRow(index, screensFiltered.count) && !isLastItemInRow(index: index, numColumns: gridLayout.count){
+                                        ScreenshotCard(horizontalArrow: "left", verticalArrow: "", index: index, screenshot: screensFiltered[index])
+                                    } else {
                                     ScreenshotCard(horizontalArrow: "", verticalArrow: "", index: index, screenshot: screensFiltered[index])
+                                    }
                                 } else if isFirstItemInRow(index: index, numColumns: gridLayout.count) && isLastRow(index: index, numColumns: gridLayout.count, totalItems: screensFiltered.count) {
                                     if !isEvenRow(index, gridLayout.count) {
                                         if index == screensFiltered.count - 4 {
                                             ScreenshotCard(horizontalArrow: "left", verticalArrow: "", index: index, screenshot: screensFiltered[index])
                                         } else {
-                                        ScreenshotCard(horizontalArrow: "left", verticalArrow: "down", index: index, screenshot: screensFiltered[index])
+                                            ScreenshotCard(horizontalArrow: "left", verticalArrow: "down", index: index, screenshot: screensFiltered[index])
                                         }
                                     } else {
-                                        ScreenshotCard(horizontalArrow: "", verticalArrow: "", index: index, screenshot: screensFiltered[index])
+                                        ScreenshotCard(horizontalArrow: "right", verticalArrow: "", index: index, screenshot: screensFiltered[index])
                                     }
                                 } else if isLastItemInRow(index: index, numColumns: gridLayout.count) && isEvenRow(index, screensFiltered.count){
                                     ScreenshotCard(horizontalArrow: "", verticalArrow: "down", index: index, screenshot: screensFiltered[index])
@@ -248,7 +169,7 @@ struct ScreenshotView: View {
                                     ScreenshotCard(horizontalArrow: "", verticalArrow: "", index: index, screenshot: screensFiltered[index])
                                 } else if isEvenRow(index, screensFiltered.count){
                                     ScreenshotCard(horizontalArrow: "right", verticalArrow: "", index: index, screenshot: screensFiltered[index])
-                                } else if !isEvenRow(index, screensFiltered.count) && isFirstItemInRow(index: index, numColumns: gridLayout.count) {
+                                } else if !isEvenRow(index, screensFiltered.count) && isFirstItemInRow(index: index, numColumns: gridLayout.count) && !screensFiltered[index].isLast {
                                     ScreenshotCard(horizontalArrow: "left", verticalArrow: "down", index: index, screenshot: screensFiltered[index])
                                 } else if !isEvenRow(index, screensFiltered.count) {
                                     ScreenshotCard(horizontalArrow: "left", verticalArrow: "", index: index, screenshot: screensFiltered[index])
@@ -269,35 +190,40 @@ struct ScreenshotView: View {
                     LazyHGrid(rows: gridLayoutH, spacing: 0) {
                         ForEach(screensFiltered.indices, id: \.self) { index in
                             if(index < screensFiltered.count) {
-                                
                                 if screensFiltered[index].isLast { // isLastItem
-                                ScreenshotCard(horizontalArrow: "", verticalArrow: "", index: index, screenshot: screensFiltered[index])
-                            } else if isFirstItemInRow(index: index, numColumns:  gridLayout.count) && isLastRow(index: index, numColumns: gridLayout.count, totalItems:screensFiltered.count) {
-                                if !isEvenRow(index, gridLayout.count) {
-                                    ScreenshotCard(horizontalArrow: "right", verticalArrow: "up", index: index, screenshot: screensFiltered[index])
-                                    
-                                }
-                                else {
+                                    if !isEvenRow(index, screensFiltered.count) && !isLastItemInRow(index: index, numColumns: gridLayoutH.count){
+                                        ScreenshotCard(horizontalArrow: "", verticalArrow: "up", index: index, screenshot: screensFiltered[index])
+                                    } else {
+                                        ScreenshotCard(horizontalArrow: "", verticalArrow: "", index: index, screenshot: screensFiltered[index])
+                                    }
+                                } else if isFirstItemInRow(index: index, numColumns:  gridLayout.count) && isLastRow(index: index, numColumns: gridLayout.count, totalItems:screensFiltered.count) {
+                                    if !isEvenRow(index, gridLayout.count) {
+                                        if index == screensFiltered.count - 4 {
+                                            ScreenshotCard(horizontalArrow: "", verticalArrow: "up", index: index, screenshot: screensFiltered[index])
+                                        } else {
+                                            ScreenshotCard(horizontalArrow: "right", verticalArrow: "up", index: index, screenshot: screensFiltered[index])
+                                        }
+                                    }
+                                    else {
+                                        ScreenshotCard(horizontalArrow: "", verticalArrow: "down", index: index, screenshot: screensFiltered[index])
+                                    }
+                                } else if isLastItemInRow(index: index, numColumns: gridLayout.count) && isEvenRow(index, screensFiltered.count){
+                                    ScreenshotCard(horizontalArrow: "right", verticalArrow: "", index: index, screenshot: screensFiltered[index])
+                                } else if isLastItemInRow(index: index, numColumns: gridLayout.count) && !isEvenRow(index, screensFiltered.count) {
                                     ScreenshotCard(horizontalArrow: "", verticalArrow: "", index: index, screenshot: screensFiltered[index])
+                                } else if isEvenRow(index, screensFiltered.count) {
+                                    ScreenshotCard(horizontalArrow: "", verticalArrow: "down", index: index, screenshot: screensFiltered[index])
+                                } else if !isEvenRow(index, screensFiltered.count) && isFirstItemInRow(index: index, numColumns: gridLayout.count){
+                                    ScreenshotCard(horizontalArrow: "right", verticalArrow: "up", index: index, screenshot: screensFiltered[index])
+                                } else if !isEvenRow(index, screensFiltered.count) {
+                                    ScreenshotCard(horizontalArrow: "", verticalArrow: "up", index: index, screenshot: screensFiltered[index])
                                 }
-                            } else if isLastItemInRow(index: index, numColumns: gridLayout.count) && isEvenRow(index, screensFiltered.count){
-                                ScreenshotCard(horizontalArrow: "right", verticalArrow: "", index: index, screenshot: screensFiltered[index])
-                            } else if isLastItemInRow(index: index, numColumns: gridLayout.count) && !isEvenRow(index, screensFiltered.count) {
-                                ScreenshotCard(horizontalArrow: "", verticalArrow: "", index: index, screenshot: screensFiltered[index])
-                            } else if isEvenRow(index, screensFiltered.count) {
-                                ScreenshotCard(horizontalArrow: "", verticalArrow: "down", index: index, screenshot: screensFiltered[index])
-                            } else if !isEvenRow(index, screensFiltered.count) && isFirstItemInRow(index: index, numColumns: gridLayout.count){
-                                ScreenshotCard(horizontalArrow: "right", verticalArrow: "up", index: index, screenshot: screensFiltered[index])
-                            } else if !isEvenRow(index, screensFiltered.count) {
-                                ScreenshotCard(horizontalArrow: "", verticalArrow: "up", index: index, screenshot: screensFiltered[index])
-                            }
                             }}
                     }
                 }
-
                 .frame(minWidth: 600, idealWidth: 1000, maxWidth: .infinity, minHeight: 600, idealHeight: 600, maxHeight: .infinity)
                 .padding()
-            } else if isVerticalList {
+            } else if isVerticalList { // Vertical list view
                 List {
                     ForEach(screensFiltered.sorted { $0.date < $1.date }, id: \.self) { screenshot in
                         if screenshot.path.absoluteString != "none" {
@@ -308,7 +234,7 @@ struct ScreenshotView: View {
                 }
                 .frame(maxWidth: .infinity, maxHeight: .infinity)
                 .ignoresSafeArea(.all)
-            } else {
+            } else { //Horizontal list view
                 ScrollView(.horizontal) {
                     HStack {
                         ForEach(screensFiltered.sorted { $0.date < $1.date }, id: \.self) { screenshot in
@@ -319,15 +245,9 @@ struct ScreenshotView: View {
                         }
                     }
                 }
+                .frame(minWidth: 500, idealWidth: .infinity, maxWidth: .infinity, minHeight: 500, idealHeight: .infinity, maxHeight: .infinity)
+                .padding()
             }
-            
-            
-            
-            
-            
-            
-            
-            
             
             
             /*

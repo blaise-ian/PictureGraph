@@ -9,7 +9,7 @@
 /* Begin PBXBuildFile section */
 		9A36AC33280892CD00C04339 /* ScreenshotHorizontalListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9A36AC32280892CD00C04339 /* ScreenshotHorizontalListView.swift */; };
 		9A4D8EA12809E779007AC9B5 /* ArrowShape.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9A4D8EA02809E779007AC9B5 /* ArrowShape.swift */; };
-		9A4D8EA42809E7CE007AC9B5 /* RowUtils.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9A4D8EA32809E7CE007AC9B5 /* RowUtils.swift */; };
+		9A4D8EA42809E7CE007AC9B5 /* GraphUtilities.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9A4D8EA32809E7CE007AC9B5 /* GraphUtilities.swift */; };
 		9A64053B28078D740036B306 /* ScreenshotVerticalListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9A64053A28078D740036B306 /* ScreenshotVerticalListView.swift */; };
 		9A79858E27F77081005FA54B /* ScreenshotView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9A79858D27F77081005FA54B /* ScreenshotView.swift */; };
 		9A9355A327FF553800234DF6 /* ScreenshotCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9A9355A227FF553800234DF6 /* ScreenshotCard.swift */; };
@@ -24,7 +24,7 @@
 /* Begin PBXFileReference section */
 		9A36AC32280892CD00C04339 /* ScreenshotHorizontalListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScreenshotHorizontalListView.swift; sourceTree = "<group>"; };
 		9A4D8EA02809E779007AC9B5 /* ArrowShape.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ArrowShape.swift; sourceTree = "<group>"; };
-		9A4D8EA32809E7CE007AC9B5 /* RowUtils.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RowUtils.swift; sourceTree = "<group>"; };
+		9A4D8EA32809E7CE007AC9B5 /* GraphUtilities.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GraphUtilities.swift; sourceTree = "<group>"; };
 		9A64053A28078D740036B306 /* ScreenshotVerticalListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScreenshotVerticalListView.swift; sourceTree = "<group>"; };
 		9A79858D27F77081005FA54B /* ScreenshotView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScreenshotView.swift; sourceTree = "<group>"; };
 		9A9355A227FF553800234DF6 /* ScreenshotCard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScreenshotCard.swift; sourceTree = "<group>"; };
@@ -52,7 +52,7 @@
 		9A4D8EA22809E7BE007AC9B5 /* Utilities */ = {
 			isa = PBXGroup;
 			children = (
-				9A4D8EA32809E7CE007AC9B5 /* RowUtils.swift */,
+				9A4D8EA32809E7CE007AC9B5 /* GraphUtilities.swift */,
 			);
 			path = Utilities;
 			sourceTree = "<group>";
@@ -187,7 +187,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				9A4D8EA42809E7CE007AC9B5 /* RowUtils.swift in Sources */,
+				9A4D8EA42809E7CE007AC9B5 /* GraphUtilities.swift in Sources */,
 				9A79858E27F77081005FA54B /* ScreenshotView.swift in Sources */,
 				9A9355A327FF553800234DF6 /* ScreenshotCard.swift in Sources */,
 				9AF79D2E27F61A1E00E2819A /* ContentView.swift in Sources */,

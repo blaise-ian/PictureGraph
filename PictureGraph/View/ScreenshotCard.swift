@@ -34,12 +34,10 @@ struct ScreenshotCard: View {
                             if screenshot?.path.absoluteString != "none" {
                                 screenshot!.image
                                     .resizable()
-                                    .frame(minWidth: 50, idealWidth: 100, maxWidth: .infinity, minHeight: 50, idealHeight: 100, maxHeight: .infinity)
+                                    .frame(minWidth: 150, idealWidth: 100, maxWidth: .infinity, minHeight: 150, idealHeight: 100, maxHeight: .infinity)
                                     .shadow(radius: 5)
                                 Text(screenshot!.dateString())
                                 Text(screenshot!.timeString())
-                                Text(String(screenshot!.isLast))
-                                //                            Text("\(index)")
                             }
                         }
                         

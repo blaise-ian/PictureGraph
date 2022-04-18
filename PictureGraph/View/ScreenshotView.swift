@@ -70,6 +70,8 @@ struct ScreenshotView: View {
                           text: $fileName
                 )
                 .padding()
+                
+                
             }
             .padding(.top)
             .padding(.leading)
@@ -80,13 +82,16 @@ struct ScreenshotView: View {
                 Divider()
                     .frame(height:30)
                 
+                
                 Text("Grid: ")
-                Toggle(isOn: verticalGridOn) {
+                
+                Toggle(isOn: horizontalGridOn) {
                     Text("Vertical")
                 }
                 .toggleStyle(.button)
                 
-                Toggle(isOn: horizontalGridOn) {
+                
+                Toggle(isOn: verticalGridOn) {
                     Text("Horizontal")
                 }
                 .toggleStyle(.button)
@@ -136,12 +141,6 @@ struct ScreenshotView: View {
             
             let screensFiltered = sortedScreens(screenshots: screensFilteredPreSort, numChunks: gridLayout.count)
             
-            // 2. Try to make this scrollview zoomable
-            //    -- Work on scaling the frame size up and down with the window size
-            // 3. Create a browse folder option to load images from selected folder
-            //    -- no files found should show if the directory is empty
-            // 1. add two more views
-            //    -- List Vertical/Horizontal
             if isVerticalGrid {
                 ScrollView {
                     LazyVGrid(columns: gridLayout, spacing: 0) {
@@ -181,10 +180,10 @@ struct ScreenshotView: View {
                 .frame(minWidth: 600, idealWidth: 600, maxWidth: .infinity, minHeight: 600, idealHeight: 600, maxHeight: .infinity)
                 .padding()
             } else if isHorizontalGrid {
-                let gridLayoutH = [GridItem(.flexible(minimum: 75, maximum: .infinity), spacing: 0),
-                                   GridItem(.flexible(minimum: 75, maximum: .infinity), spacing: 0),
-                                   GridItem(.flexible(minimum: 75, maximum: .infinity), spacing: 0),
-                                   GridItem(.flexible(minimum: 75, maximum: .infinity), spacing: 0)]
+                let gridLayoutH = [GridItem(.flexible(minimum: 150, maximum: .infinity), spacing: 0),
+                                   GridItem(.flexible(minimum: 150, maximum: .infinity), spacing: 0),
+                                   GridItem(.flexible(minimum: 150, maximum: .infinity), spacing: 0),
+                                   GridItem(.flexible(minimum: 150, maximum: .infinity), spacing: 0)]
                 
                 ScrollView(.horizontal) {
                     LazyHGrid(rows: gridLayoutH, spacing: 0) {
@@ -235,8 +234,11 @@ struct ScreenshotView: View {
                 .frame(maxWidth: .infinity, maxHeight: .infinity)
                 .ignoresSafeArea(.all)
             } else { //Horizontal list view
+                let adaptiveGridItems = [GridItem(.adaptive(minimum: 200))]
+                
+                
                 ScrollView(.horizontal) {
-                    HStack {
+                    LazyHGrid(rows: adaptiveGridItems, spacing: 0) {
                         ForEach(screensFiltered.sorted { $0.date < $1.date }, id: \.self) { screenshot in
                             if screenshot.path.absoluteString != "none" {
                                 ScreenshotHorizontalListView(screenshot: screenshot)

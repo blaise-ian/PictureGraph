@@ -18,23 +18,15 @@ struct ScreenshotCard: View {
         VStack(alignment: .leading) {
             HStack {
                 if screenshot != nil {
-                    
                     Button(action: {
-                        print("Trying to open: ", screenshot!.path)
-                        print("INDEX: ", index)
+                        // opens the screenshot in preview (or default image viewer)
                         NSWorkspace.shared.open(screenshot!.path)
-                        // Image arrangement (arrows)
-                        // HOrizontal/ Vertical view
-                        //QLPreviewPanel to open with Quick Look
-                        // Designing cards
-                        
-                        // Look into resizing to make additional columns/ rows depending on size
                     }) {
                         VStack {
                             if screenshot?.path.absoluteString != "none" {
                                 screenshot!.image
                                     .resizable()
-                                    .frame(minWidth: 150, idealWidth: 100, maxWidth: .infinity, minHeight: 150, idealHeight: 100, maxHeight: .infinity)
+                                    .frame(minWidth: 50, idealWidth: 100, maxWidth: 200, minHeight: 50, idealHeight: 100, maxHeight: 200)
                                     .shadow(radius: 5)
                                 Text(screenshot!.dateString())
                                 Text(screenshot!.timeString())

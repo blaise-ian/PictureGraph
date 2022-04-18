@@ -20,6 +20,8 @@ struct ScreenshotHorizontalListView: View {
                         .resizable()
                         .frame(width: 100, height: 100)
                     Text("File name: " + screen.path.lastPathComponent)
+                        .frame(width: 150)
+                        .fixedSize(horizontal: false, vertical: true)
                     Text("Date created: " + screen.dateString())
                     Text("Time created: " + screen.timeString())
                 }

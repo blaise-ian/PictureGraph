@@ -89,23 +89,26 @@ struct ScreenshotView: View {
                     Text("Vertical")
                 }
                 .toggleStyle(.button)
-                
+                .foregroundColor(Color.black)
                 
                 Toggle(isOn: verticalGridOn) {
                     Text("Horizontal")
                 }
                 .toggleStyle(.button)
+                .foregroundColor(Color.black)
                 
                 Text("List: ")
                 Toggle(isOn: verticalListOn) {
                     Text("Vertical")
                 }
                 .toggleStyle(.button)
+                .foregroundColor(Color.black)
                 
                 Toggle(isOn: horizontalListOn) {
                     Text("Horizontal")
                 }
                 .toggleStyle(.button)
+                .foregroundColor(Color.black)
                 
                 Spacer()
                 
